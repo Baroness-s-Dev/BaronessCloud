@@ -63,6 +63,9 @@ public class LinkedPluginFactory {
         // link
         lore.add(config.getString("icon.link"));
 
+        // version history
+        lore.add(config.getString("icon.versions"));
+
         // building ItemStack
         ItemStack itemStack = new ItemBuilder(material)
                 .setName(name)
@@ -74,7 +77,7 @@ public class LinkedPluginFactory {
             UpdateCheckerUtil.logDefaultUpdate(new Logger.Builder("[" + plugin.getName() + "]").build(), plugin, latestVersion);
         }
 
-        return new LinkedPlugin(plugin, itemStack, index.getUrl(), hasUpdate, index.getDescription());
+        return new LinkedPlugin(plugin, itemStack, index.getUrl(), index.getUrl(), hasUpdate, index.getDescription());
     }
 
     private static String getUpdateStatusText(@NotNull UpdateCheckerUtil.UpdateType updateType, @NotNull FileConfiguration config) {

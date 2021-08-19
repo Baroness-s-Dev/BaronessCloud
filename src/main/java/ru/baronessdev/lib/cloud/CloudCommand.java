@@ -30,9 +30,8 @@ public class CloudCommand implements CommandExecutor {
             return true;
         }
 
-        if (CloudMenuManager.handle(p)) {
-            p.openInventory(CloudMenuManager.getMenu());
-        }
+        CloudMenuManager.handle(p);
+        p.openInventory(CloudMenuManager.getMenu());
         return true;
     }
 }

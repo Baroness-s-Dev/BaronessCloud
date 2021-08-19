@@ -12,6 +12,7 @@ public class LinkedPlugin {
     private final JavaPlugin basePlugin;
     private final ItemStack icon;
     private final String url;
+    private final String versionsUrl;
     private final boolean hasUpdate;
     private final List<String> baseDescription;
 

@@ -1,5 +1,6 @@
 package ru.baronessdev.lib.cloud.menu;
 
+import lombok.Data;
 import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,11 +11,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.java.JavaPlugin;
+import ru.baronessdev.lib.cloud.BaronessCloud;
 import ru.baronessdev.lib.cloud.Index;
 import ru.baronessdev.lib.cloud.linked.LinkedPlugin;
 import ru.baronessdev.lib.cloud.util.ItemBuilder;
@@ -30,13 +32,10 @@ public class CloudMenuManager {
     private static Inventory menu;
     private static final List<MenuListener> listeners = new ArrayList<>();
 
-    private static List<LinkedPlugin> pluginList;
     private static FileConfiguration config;
-
-    private static final LinkedHashMap<Integer, String> keys = new LinkedHashMap<>();
+    private static final LinkedHashMap<Integer, PluginUrl> keys = new LinkedHashMap<>();
 
     public static synchronized void build(List<LinkedPlugin> pluginList, List<Index> rawIndexList, FileConfiguration config) {
-        CloudMenuManager.pluginList = pluginList;
         CloudMenuManager.config = config;
 
         keys.clear();
@@ -58,7 +57,7 @@ public class CloudMenuManager {
         pluginList.forEach(linkedPlugin -> {
             menu.setItem(i.get(), linkedPlugin.getIcon());
 
-            keys.put(i.getAndIncrement(), linkedPlugin.getUrl());
+            keys.put(i.getAndIncrement(), new PluginUrl(linkedPlugin.getUrl(), linkedPlugin.getVersionsUrl()));
         });
 
         // adding other plugins
@@ -83,13 +82,16 @@ public class CloudMenuManager {
             // link
             lore.add(config.getString("icon.link"));
 
+            // version history
+            lore.add(config.getString("icon.versions"));
+
             menu.setItem(i.get(), new ItemBuilder(Material.BARRIER)
                     .setName(ChatColor.GOLD + index.getName())
                     .setLore(lore)
                     .build()
             );
 
-            keys.put(i.getAndIncrement(), index.getUrl());
+            keys.put(i.getAndIncrement(), new PluginUrl(index.getUrl(), index.getChangelogsUrl()));
         });
 
         // help button
@@ -102,26 +104,13 @@ public class CloudMenuManager {
         }
     }
 
-    public static synchronized boolean handle(Player p) {
+    public static synchronized void handle(Player p) {
         // deactivating old one (for safety)
         listeners.stream().filter(menuListener -> menuListener.player.equals(p)).findFirst().ifPresent(MenuListener::deactivate);
 
-        // getting some plugin to register handler
-        JavaPlugin plugin = null;
-        for (LinkedPlugin linkedPlugin : pluginList) {
-            if (linkedPlugin.getBasePlugin().isEnabled()) {
-                plugin = linkedPlugin.getBasePlugin();
-                break;
-            }
-        }
-
-        // could not register handler
-        if (plugin == null) return false;
-
         MenuListener listener = new MenuListener(p);
-        Bukkit.getPluginManager().registerEvents(listener, plugin);
+        Bukkit.getPluginManager().registerEvents(listener, BaronessCloud.getInstance());
         listeners.add(listener);
-        return true;
     }
 
     public static Inventory getMenu() {
@@ -156,7 +145,8 @@ public class CloudMenuManager {
             p.closeInventory();
             deactivate();
             new SmartMessagesBuilder(config.getString("icon.click-me"))
-                    .setClickEvent(ClickEvent.Action.OPEN_URL, keys.getOrDefault(e.getSlot(), "https://market.baronessdev.ru/"))
+                    .setClickEvent(ClickEvent.Action.OPEN_URL, keys.getOrDefault(e.getSlot(), new PluginUrl(
+                            "https://market.baronessdev.ru/", "https://market.baronessdev.ru/")).getURLByClick(e.getClick()))
                     .send(p);
         }
 
@@ -174,6 +164,18 @@ public class CloudMenuManager {
 
         protected void deactivate() {
             HandlerList.unregisterAll(this);
+        }
+    }
+
+    @Data
+    private static class PluginUrl {
+
+        private final String url;
+        private final String versionsUrl;
+
+        public String getURLByClick(ClickType type) {
+            if (type == ClickType.RIGHT) return versionsUrl;
+            return url;
         }
     }
 }

@@ -2,6 +2,7 @@ package ru.baronessdev.lib.cloud;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,7 +70,9 @@ public class BaronessCloud extends JavaPlugin {
         try {
             Files.copy(new URL("https://mirror.baronessdev.ru/BaronessCloud/indexes.yml").openStream(), indexesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(ChatColor.RED + "BaronessCloud could not download indexes: " + e.getMessage());
+            disabled = true;
+            return;
         }
 
         // loading indexes
@@ -77,6 +80,7 @@ public class BaronessCloud extends JavaPlugin {
         indexConfig.getKeys(false).forEach(key -> indexList.add(new Index(
                 key,
                 indexConfig.getString(key + ".url"),
+                indexConfig.getString(key + ".changelogs"),
                 indexConfig.getStringList(key + ".description"),
                 indexConfig.getString(key + ".material"),
                 indexConfig.getString(key + ".fallbackMaterial"),
@@ -95,7 +99,8 @@ public class BaronessCloud extends JavaPlugin {
         ));
     }
 
-    private synchronized BaronessCloud addPlugin(JavaPlugin plugin) {
+    @SuppressWarnings("unused")
+    public synchronized BaronessCloud addPlugin(JavaPlugin plugin) {
         if (isDisabled()) return this;
         String pluginName = plugin.getName();
 
