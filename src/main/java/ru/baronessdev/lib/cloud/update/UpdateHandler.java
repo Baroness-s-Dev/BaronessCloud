@@ -51,4 +51,59 @@ public class UpdateHandler {
             return other.getPower() >= power;
         }
     }
+
+    public static class Builder {
+
+        private final JavaPlugin plugin;
+        private final UpdateHandler.Priority handlerPriority;
+        private final Class<? extends Event>[] events;
+
+        private TextComponent message = UpdateHandlerFactory.getDefaultMessage();
+        private String method = "getPlayer";
+        private EventPriority eventPriority = EventPriority.NORMAL;
+        private String permission = UpdateHandlerFactory.getDefaultPermission();
+        private boolean ignoreCancelled = true;
+        private int delay = 4 * 20;
+
+        @SafeVarargs
+        public Builder(JavaPlugin plugin, UpdateHandler.Priority handlerPriority, Class<? extends Event>... events) {
+            this.plugin = plugin;
+            this.handlerPriority = handlerPriority;
+            this.events = events;
+        }
+
+        public UpdateHandler.Builder setMessage(TextComponent s) {
+            message = s;
+            return this;
+        }
+
+        public UpdateHandler.Builder setMethod(String s) {
+            method = s;
+            return this;
+        }
+
+        public UpdateHandler.Builder setPermission(String s) {
+            permission = s;
+            return this;
+        }
+
+        public UpdateHandler.Builder setEventPriority(EventPriority eventPriority) {
+            this.eventPriority = eventPriority;
+            return this;
+        }
+
+        public UpdateHandler.Builder setIgnoreCancelled(boolean ignoreCancelled) {
+            this.ignoreCancelled = ignoreCancelled;
+            return this;
+        }
+
+        public UpdateHandler.Builder setDelay(int delay) {
+            this.delay = delay;
+            return this;
+        }
+
+        public UpdateHandler build() {
+            return new UpdateHandler(handlerPriority, events, message, method, eventPriority, permission, ignoreCancelled, delay, plugin);
+        }
+    }
 }

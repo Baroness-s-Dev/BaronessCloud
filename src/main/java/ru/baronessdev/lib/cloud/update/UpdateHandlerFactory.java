@@ -15,8 +15,8 @@ public class UpdateHandlerFactory {
     private static FileConfiguration config;
 
     @SuppressWarnings("unchecked")
-    public static UpdateHandlerBuilder create(@NotNull JavaPlugin plugin, @NotNull UpdateHandler.Priority handlerPriority, @NotNull Class<? extends Event>... events) {
-        return new UpdateHandlerBuilder(plugin, handlerPriority, events);
+    public static UpdateHandler.Builder create(@NotNull JavaPlugin plugin, @NotNull UpdateHandler.Priority handlerPriority, @NotNull Class<? extends Event>... events) {
+        return new UpdateHandler.Builder(plugin, handlerPriority, events);
     }
 
     @SuppressWarnings({"unchecked", "unused"})
