@@ -90,6 +90,8 @@ public class BaronessCloud extends JavaPlugin {
 
         //noinspection ResultOfMethodCallIgnored
         indexesFile.delete();
+
+        buildMenu();
     }
 
     private void setupCommand() {
