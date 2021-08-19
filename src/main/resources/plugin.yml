@@ -1,0 +1,4 @@
+name: BaronessCloud
+version: ${project.version}
+main: ru.baronessdev.lib.cloud.BaronessCloud
+website: baronessdev.ru
