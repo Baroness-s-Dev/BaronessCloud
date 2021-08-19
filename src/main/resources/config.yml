@@ -1,0 +1,42 @@
+enabled: true
+
+update-notify:
+  enabled: true
+  message: '§6§l[Baroness§7§lCloud]§f Доступны обновления: §e{count}§7 | /baronesscloud'
+  hover: '§6Нажмите, чтобы открыть меню.'
+  click-action: 'RUN_COMMAND'
+  click-value: '/baronesscloud'
+  permission: 'baronesscloud.command'
+
+command:
+  enabled: true
+  permission: 'baronesscloud.command'
+  no-permission-message: '§cНедостаточно прав для выполнения команды.'
+
+icon:
+  current-version: '§6Текущая версия: §7v§f%d'
+  actual-version: '§6Актуальная версия: §7v§f%d'
+  update-available: '§d§lДоступно обновление!'
+  update-unavailable: '§a§lУ вас последняя версия!'
+  update-failed: '§c§lПроверка не удалась.'
+  not-installed: '§cПлагин не установлен.'
+  depends: '§6Доступно из-за наличия:'
+  sync: '§6Связан с плагинами:'
+  link: '§6Нажмите, чтобы открыть сайт.'
+  click-me: '§6§lНажмите по этому сообщению!'
+
+menu:
+  title: 'Панель BaronessCloud'
+  help:
+    enabled: true
+    name: '§dЧто это?'
+    material: 'COMPASS'
+    lore:
+      - '§6BaronessCloud §f- единая система для всех'
+      - '§fBaroness`s Dev плагинов.'
+      - ''
+      - '§fЗдесь вы можете смотреть их состояние'
+      - '§fи проверять обновления.'
+      - ''
+      - '§fПодробнее:'
+      - '§emarket.baronessdev.ru'
