@@ -77,7 +77,7 @@ public class LinkedPluginFactory {
             UpdateCheckerUtil.logDefaultUpdate(new Logger.Builder("[" + plugin.getName() + "]").build(), plugin, latestVersion);
         }
 
-        return new LinkedPlugin(plugin, itemStack, index.getUrl(), index.getUrl(), hasUpdate, index.getDescription());
+        return new LinkedPlugin(plugin, itemStack, index.getUrl(), index.getChangelogsUrl(), hasUpdate, index.getDescription());
     }
 
     private static String getUpdateStatusText(@NotNull UpdateCheckerUtil.UpdateType updateType, @NotNull FileConfiguration config) {
