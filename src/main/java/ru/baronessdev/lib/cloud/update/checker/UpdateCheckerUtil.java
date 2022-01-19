@@ -25,46 +25,46 @@ public class UpdateCheckerUtil {
         });
     }
 
-    public static void checkAsynchronously(@NotNull String url, Consumer<Integer> acceptConsumer, Consumer<UpdateCheckException> exceptionConsumer) {
+    public static void checkAsynchronously(@NotNull String url, Consumer<String> acceptConsumer, Consumer<UpdateCheckException> exceptionConsumer) {
         ThreadUtil.runAsyncThread(() -> {
-            int i = -1;
+            String latest = "-1";
             try {
-                i = getLatest(url);
+                latest = getLatest(url);
             } catch (UpdateCheckException e) {
                 exceptionConsumer.accept(e);
             } finally {
-                acceptConsumer.accept(i);
+                acceptConsumer.accept(latest);
             }
         });
     }
 
-    public static int check(@NotNull JavaPlugin plugin, @NotNull String url, Logger logger) throws UpdateCheckException {
+    public static String check(@NotNull JavaPlugin plugin, @NotNull String url, Logger logger) throws UpdateCheckException {
         if (logger != null) {
             return checkWithLogger(plugin, url, logger);
         }
 
-        int latest = getLatest(url);
-        if (latest == -1) {
+        String latest = getLatest(url);
+        if (latest.equals("-1")) {
             throw new UpdateCheckException("Checker returned -1");
         }
 
-        return (Integer.parseInt(plugin.getDescription().getVersion()) < latest) ? latest : -1;
+        return latest;
     }
 
-    private static int checkWithLogger(JavaPlugin plugin, String url, Logger logger) {
-        int i = -1;
+    private static String checkWithLogger(JavaPlugin plugin, String url, Logger logger) {
+        String latest = "-1";
         try {
-            i = UpdateCheckerUtil.check(plugin, url, null);
-            if (i != -1) {
-                logDefaultUpdate(logger, plugin, i);
+            latest = UpdateCheckerUtil.check(plugin, url, null);
+            if (!latest.equals("-1")) {
+                logDefaultUpdate(logger, plugin, latest);
             }
         } catch (UpdateCheckException e) {
             logDefaultExceptionError(logger, e);
         }
-        return i;
+        return latest;
     }
 
-    public static void logDefaultUpdate(Logger logger, JavaPlugin plugin, int i) {
+    public static void logDefaultUpdate(Logger logger, JavaPlugin plugin, String i) {
         logger.log(LogLevel.INFO, "New version found: v" + ChatColor.YELLOW + i + ChatColor.GRAY + " (Current: v" + plugin.getDescription().getVersion() + ")");
         logger.log(LogLevel.INFO, "Update now: " + ChatColor.AQUA + "market.baronessdev.ru");
     }
@@ -74,8 +74,8 @@ public class UpdateCheckerUtil {
         logger.log(LogLevel.ERROR, "Please contact Baroness's Dev if this isn't your mistake.");
     }
 
-    private static int getLatest(String url) throws UpdateCheckException {
-        int version = -1;
+    private static String getLatest(String url) throws UpdateCheckException {
+        String version = "-1";
         try {
             String result = EntityUtils.toString(HttpClients.createDefault().execute(
                     new HttpGet(url)
@@ -83,7 +83,11 @@ public class UpdateCheckerUtil {
 
             for (String s : result.split("\n")) {
                 if (s.contains("model")) {
-                    version = Integer.parseInt(s.replaceAll("[^0-9]", ""));
+                    s = s.split("\"")[3];
+                    if (s.charAt(0) == 'v') {
+                        s = s.substring(1);
+                    }
+                    version = s;
                     break;
                 }
             }
@@ -94,9 +98,9 @@ public class UpdateCheckerUtil {
         return version;
     }
 
-    public static @NotNull UpdateType getUpdateType(@NotNull JavaPlugin plugin, int currentVersion, int latestVersion) {
-        if (latestVersion == -1) return UpdateType.FAILED;
-        if (currentVersion < latestVersion) return UpdateType.AVAILABLE;
+    public static @NotNull UpdateType getUpdateType(@NotNull JavaPlugin plugin, String currentVersion, String latestVersion) {
+        if (latestVersion.equals("-1")) return UpdateType.FAILED;
+        if (!currentVersion.equals(latestVersion)) return UpdateType.AVAILABLE;
         return UpdateType.UNAVAILABLE;
     }
 

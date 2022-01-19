@@ -18,9 +18,9 @@ import java.util.List;
 
 public class LinkedPluginFactory {
 
-    public static LinkedPlugin create(@NotNull Index index, @NotNull JavaPlugin plugin, int latestVersion, @NotNull FileConfiguration config) {
+    public static LinkedPlugin create(@NotNull Index index, @NotNull JavaPlugin plugin, String latestVersion, @NotNull FileConfiguration config) {
         // getting current version
-        final int currentVersion = Integer.parseInt(plugin.getDescription().getVersion());
+        final String currentVersion = plugin.getDescription().getVersion();
 
         // checking for updates
         UpdateCheckerUtil.UpdateType updateType = UpdateCheckerUtil.getUpdateType(plugin, currentVersion, latestVersion);
@@ -52,8 +52,8 @@ public class LinkedPluginFactory {
         }
 
         // versions
-        lore.add(String.format(config.getString("icon.current-version"), currentVersion));
-        lore.add(String.format(config.getString("icon.actual-version"), latestVersion));
+        lore.add(config.getString("icon.current-version").replace("%d", currentVersion));
+        lore.add(config.getString("icon.actual-version").replace("%d", latestVersion));
         lore.add("");
 
         // update status
