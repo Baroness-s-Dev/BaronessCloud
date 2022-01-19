@@ -6,7 +6,7 @@
 
     <groupId>ru.baronessdev.lib</groupId>
     <artifactId>cloud</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>BaronessCloud</name>
