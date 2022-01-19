@@ -76,7 +76,6 @@ public class ItemBuilder {
         if (this.lore != null) itemMeta.setLore(this.lore);
         itemStack.setAmount(this.count);
         itemStack.setDurability(this.data);
-        itemMeta.setUnbreakable(isUnbreakable);
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
